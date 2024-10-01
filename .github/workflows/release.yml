@@ -65,11 +65,11 @@ jobs:
           key: ${{ matrix.settings.target }}-cargo-${{ matrix.settings.host }}
 
       - name: Install cross
-        if : ${{matrix.settings.host == 'ubuntu-latest'}}
+        if: ${{matrix.settings.host == 'ubuntu-latest'}}
         run: cargo install cross --git https://github.com/cross-rs/cross
 
       - name: Copy cross file
-        if : ${{matrix.settings.host == 'ubuntu-latest'}}
+        if: ${{matrix.settings.host == 'ubuntu-latest'}}
         run: |
           cp ./Cross.toml ./conflux/Cross.toml
           cp ./x86_64-unknown-linux-gnu ./conflux/x86_64-unknown-linux-gnu
@@ -79,23 +79,30 @@ jobs:
         run: |
           brew update
           brew install llvm openssl pkg-config cmake sqlite
-      
+
       - name: Install windows dependencies
         if: ${{matrix.settings.host == 'windows-latest'}}
         run: |
           choco install llvm visualstudio-installer visualstudio2017-workload-vctools visualstudio2017buildtools-y
           echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" | Out-File -FilePath $env:GITHUB_ENV -Append
           vcpkg install openssl:x64-windows-static-md
-      
+
       - name: Build
         shell: bash
         run: |
           cd conflux
           ${{ matrix.settings.build }}
-        
+      - name: copy conflux
+        if: ${{matrix.settings.host == 'windows-latest'}}
+        run: cp conflux/target/${{matrix.settings.target}}/release/conflux.exe ./conflux-${{ matrix.settings.target }}.exe
+
+      - name: copy conflux
+        if: ${{matrix.settings.host != 'windows-latest'}}
+        run: cp conflux/target/${{matrix.settings.target}}/release/conflux ./conflux-${{ matrix.settings.target }}
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: conflux-${{ matrix.settings.target }}
-          path: 'conflux/target/${{matrix.settings.target}}/release/conflux'
+          path: ./conflux-*
           if-no-files-found: error
