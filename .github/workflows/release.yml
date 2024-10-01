@@ -4,15 +4,46 @@ on:
   push:
     tags:
       - "v*.*.*"
-  # schedule:
-  #   - cron: "0 0 * * *"
+  schedule:
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
+  IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
 
 jobs:
+  prepare:
+    name: check
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.should_run.outputs.should_run }}
+
+    steps:
+      - name: Checkout conflux
+        uses: actions/checkout@v4
+        with:
+          repository: "Conflux-Chain/conflux-rust"
+          fetch-depth: 0
+
+      - name: print latest_commit
+        run: echo $(git rev-parse HEAD)
+
+      - id: should_run
+        name: check latest commit is less than a day
+        if: ${{ github.event_name == 'schedule' }}
+        run: |
+          if [ -z "$(git rev-list --after='24 hours' HEAD)" ]; then
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          fi
+
+
+
   build:
+    needs: [prepare]
+    if: ${{ needs.prepare.outputs.should_run != 'false' }}
     strategy:
       fail-fast: false
       matrix:
