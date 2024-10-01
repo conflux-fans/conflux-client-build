@@ -30,8 +30,8 @@ jobs:
             build: cross build --release --target x86_64-unknown-linux-gnu
 
           - host: windows-latest
-            target: x86_64-pc-windows-gnu
-            build: cargo build --release --target x86_64-pc-windows-gnu
+            target: x86_64-pc-windows-msvc
+            build: cargo build --release --target x86_64-pc-windows-msvc
 
     name: ${{ matrix.settings.target }}
     runs-on: ${{ matrix.settings.host }}
@@ -75,7 +75,7 @@ jobs:
           cp ./x86_64-unknown-linux-gnu ./conflux/x86_64-unknown-linux-gnu
 
       - name: Install macos dependencies
-        if: ${{matrix.settings.host == 'macos-latest'}} || ${{matrix.settings.host == 'macos-13'}}
+        if: contains(matrix.settings.host, 'macos')
         run: |
           brew update
           brew install llvm openssl pkg-config cmake sqlite
