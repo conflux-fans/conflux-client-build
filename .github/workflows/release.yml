@@ -19,19 +19,19 @@ jobs:
         settings:
           - host: macos-13
             target: x86_64-apple-darwin
-            build: cargo build --release --target x86_64-apple-darwin
+            build: cargo build --bin conflux --release --target x86_64-apple-darwin
 
           - host: macos-latest
             target: aarch64-apple-darwin
-            build: cargo build --release --target aarch64-apple-darwin
+            build: cargo build --bin conflux --release --target aarch64-apple-darwin
 
           - host: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            build: cross build --release --target x86_64-unknown-linux-gnu
+            build: cross build --bin conflux --release --target x86_64-unknown-linux-gnu
 
           - host: windows-latest
             target: x86_64-pc-windows-msvc
-            build: cargo build --release --target x86_64-pc-windows-msvc
+            build: cargo build --bin conflux --release --target x86_64-pc-windows-msvc
 
     name: ${{ matrix.settings.target }}
     runs-on: ${{ matrix.settings.host }}
@@ -85,7 +85,7 @@ jobs:
         run: |
           choco install llvm visualstudio-installer visualstudio2017-workload-vctools visualstudio2017buildtools-y
           echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" | Out-File -FilePath $env:GITHUB_ENV -Append
-          vcpkg install openssl:x64-windows-static
+          vcpkg install openssl:x64-windows-static-md
       
       - name: Build
         shell: bash
