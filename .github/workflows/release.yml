@@ -162,3 +162,21 @@ jobs:
           name: conflux-${{ matrix.settings.target }}
           path: ./conflux-*
           if-no-files-found: error
+
+  release:
+    needs: [build, prepare]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: ${{ needs.prepare.outputs.changelog }}
+          files: artifacts/*
