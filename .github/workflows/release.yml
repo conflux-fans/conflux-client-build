@@ -75,10 +75,10 @@ jobs:
           cp ./x86_64-unknown-linux-gnu ./conflux/x86_64-unknown-linux-gnu
 
       - name: Install macos dependencies
-        if: ${{matrix.settings.host == 'macos-latest'}}
+        if: ${{matrix.settings.host == 'macos-latest'}} || ${{matrix.settings.host == 'macos-13'}}
         run: |
           brew update
-          brew install llvm openssl pkg-config cmake
+          brew install llvm openssl pkg-config cmake sqlite
       
       - name: Install windows dependencies
         if: ${{matrix.settings.host == 'windows-latest'}}
