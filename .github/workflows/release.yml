@@ -12,13 +12,90 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  prepare:
-    name: Prepare
-    runs-on: ubuntu-latest
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        settings:
+          - host: macos-13
+            target: x86_64-apple-darwin
+            build: cargo build --release --target x86_64-apple-darwin
+
+          - host: macos-latest
+            target: aarch64-apple-darwin
+            build: cargo build --release --target aarch64-apple-darwin
+
+          - host: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            build: cross build --release --target x86_64-unknown-linux-gnu
+
+          - host: windows-latest
+            target: x86_64-pc-windows-gnu
+            build: cargo build --release --target x86_64-pc-windows-gnu
+
+    name: ${{ matrix.settings.target }}
+    runs-on: ${{ matrix.settings.host }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Checkout conflux
+        uses: actions/checkout@v4
         with:
-            repository: 'Conflux-Chain/conflux-rust'
-            fetch-depth: 0
-            
+          repository: "Conflux-Chain/conflux-rust"
+          fetch-depth: 0
+          path: conflux
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: ${{ matrix.settings.target }}
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            ~/.napi-rs
+            .cargo-cache
+            target/
+          key: ${{ matrix.settings.target }}-cargo-${{ matrix.settings.host }}
+
+      - name: Install cross
+        if : ${{matrix.settings.host == 'ubuntu-latest'}}
+        run: cargo install cross --git https://github.com/cross-rs/cross
+
+      - name: Copy cross file
+        if : ${{matrix.settings.host == 'ubuntu-latest'}}
+        run: |
+          cp ./Cross.toml ./conflux/Cross.toml
+          cp ./x86_64-unknown-linux-gnu ./conflux/x86_64-unknown-linux-gnu
+
+      - name: Install macos dependencies
+        if: ${{matrix.settings.host == 'macos-latest'}}
+        run: |
+          brew update
+          brew install llvm openssl pkg-config cmake
+      
+      - name: Install windows dependencies
+        if: ${{matrix.settings.host == 'windows-latest'}}
+        run: |
+          choco install llvm visualstudio-installer visualstudio2017-workload-vctools visualstudio2017buildtools-y
+          echo "VCPKG_ROOT=$env:VCPKG_INSTALLATION_ROOT" | Out-File -FilePath $env:GITHUB_ENV -Append
+          vcpkg install openssl:x64-windows-static
+      
+      - name: Build
+        shell: bash
+        run: |
+          cd conflux
+          ${{ matrix.settings.build }}
+        
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: conflux-${{ matrix.settings.target }}
+          path: 'conflux/target/${{matrix.settings.target}}/release/conflux'
+          if-no-files-found: error
