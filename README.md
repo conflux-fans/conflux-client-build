@@ -29,6 +29,8 @@ choco install openssl -y
 
 ## Linux
 
+Linux is build on Ubuntu22.04(GLIBC 2.36)
+
 - error while loading shared libraries: libssl.so.3
 
 ```bash
