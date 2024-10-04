@@ -24,7 +24,7 @@ You need the [Microsoft Visual C++ Redistributable Version](https://learn.micros
 - The code execution cannot proceed because LIBSSL-3-x64.dll was not found. Reinstalling the program may fix this problem.
 
 ```ps
-choco install openssl
+choco install openssl -y
 ```
 
 ## Linux
@@ -32,7 +32,13 @@ choco install openssl
 - error while loading shared libraries: libssl.so.3
 
 ```bash
-apt install openssl
+apt install openssl -y
+```
+
+- error while loading shared libraries: libsqlite3.so.0
+
+```bash
+apt install sqlite3 -y
 ```
 
 # Supported by @xcfx-node
