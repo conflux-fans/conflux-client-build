@@ -145,8 +145,6 @@ jobs:
 
       - name: Build
         shell: bash
-        env:
-          OPENSSL_STATIC: 1
         run: |
           cd conflux
           ${{ matrix.settings.build }}
