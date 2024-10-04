@@ -27,6 +27,13 @@ You need the [Microsoft Visual C++ Redistributable Version](https://learn.micros
 choco install openssl
 ```
 
+## Linux
+
+- error while loading shared libraries: libssl.so.3
+
+```bash
+apt install openssl
+```
 
 # Supported by @xcfx-node
 
