@@ -64,7 +64,7 @@ jobs:
       - name: build changelog
         id: build_changelog
         run: |
-          CHANGELOG=$(git log --since="24 hours ago" --pretty=format:"- %s (%h)" --reverse | sed 's/"/'"'"'/g')
+          CHANGELOG=$(git log --since="24 hours ago" --pretty=format:"\`%h\` %<(12)%ar %s [%an]" --reverse)
           echo "changelog=$CHANGELOG" >> $GITHUB_OUTPUT
 
   build:
