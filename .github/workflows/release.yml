@@ -77,11 +77,11 @@ jobs:
         settings:
           - host: macos-13
             target: x86_64-apple-darwin
-            build: cargo build --bin conflux --release --target x86_64-apple-darwin
+            build: RUSTFLAGS="-L $(brew --prefix bzip2)/lib -l bz2"  cargo build --bin conflux --release --target x86_64-apple-darwin
 
-          - host: macos-latest
+          - host: macos-15
             target: aarch64-apple-darwin
-            build: cargo build --bin conflux --release --target aarch64-apple-darwin
+            build: RUSTFLAGS="-L $(brew --prefix bzip2)/lib -l bz2" cargo build --bin conflux --release --target aarch64-apple-darwin
 
           - host: ubuntu-latest
             target: x86_64-unknown-linux-gnu
@@ -136,7 +136,7 @@ jobs:
         if: contains(matrix.settings.host, 'macos')
         run: |
           brew update
-          brew install llvm openssl pkg-config cmake sqlite
+          brew install llvm openssl pkg-config cmake sqlite bzip2
 
       - name: Install windows dependencies
         if: ${{matrix.settings.host == 'windows-latest'}}
