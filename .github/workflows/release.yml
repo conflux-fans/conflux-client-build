@@ -135,8 +135,8 @@ jobs:
       - name: Install macos dependencies
         if: contains(matrix.settings.host, 'macos')
         run: |
-          brew update
-          brew install llvm openssl pkg-config cmake sqlite bzip2
+          # brew update
+          brew install bzip2 # cmake pkg-config openssl llvm
 
       - name: Install windows dependencies
         if: ${{matrix.settings.host == 'windows-latest'}}
