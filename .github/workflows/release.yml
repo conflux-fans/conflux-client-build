@@ -5,7 +5,8 @@ on:
     tags:
       - "v*.*.*"
   schedule:
-    - cron: "0 0 * * *"
+    # - cron: "0 0 * * *"
+    - cron: "0 1 * * *"
   workflow_dispatch:
 
 env:
@@ -176,7 +177,7 @@ jobs:
         with:
           path: artifacts
           merge-multiple: true
-      
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
