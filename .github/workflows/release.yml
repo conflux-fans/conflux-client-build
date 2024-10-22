@@ -10,7 +10,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  IS_NIGHTLY: true
+  IS_NIGHTLY: ${{ github.event_name == 'schedule' }}
 
 jobs:
   prepare:
@@ -33,7 +33,7 @@ jobs:
 
       - id: should_run
         name: check latest commit is less than a day
-        # if: ${{ github.event_name == 'schedule' }}
+        if: ${{ github.event_name == 'schedule' }}
         run: |
           if [ -z "$(git rev-list --after='24 hours' HEAD)" ]; then
             echo "should_run=false" >> $GITHUB_OUTPUT
