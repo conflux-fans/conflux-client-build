@@ -180,5 +180,6 @@ jobs:
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ needs.prepare.outputs.tag_name}}
           body: ${{ needs.prepare.outputs.changelog }}
           files: artifacts/*
