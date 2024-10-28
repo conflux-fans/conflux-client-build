@@ -150,19 +150,28 @@ jobs:
         run: |
           cd conflux
           ${{ matrix.settings.build }}
+
+      - name: copy config
+        run: cp conflux/run ./conflux-${{ matrix.settings.target }}
+
       - name: copy conflux
         if: ${{matrix.settings.host == 'windows-latest'}}
-        run: cp conflux/target/${{matrix.settings.target}}/release/conflux.exe ./conflux-${{ matrix.settings.target }}.exe
+        run: cp conflux/target/${{matrix.settings.target}}/release/conflux.exe ./conflux-${{ matrix.settings.target }}/conflux.exe
 
       - name: copy conflux
         if: ${{matrix.settings.host != 'windows-latest'}}
-        run: cp conflux/target/${{matrix.settings.target}}/release/conflux ./conflux-${{ matrix.settings.target }}
+        run: cp conflux/target/${{matrix.settings.target}}/release/conflux ./conflux-${{ matrix.settings.target }}/conflux
+      
+      - name: compress
+        run: |
+          cd conflux-${{ matrix.settings.target }}
+          zip -r conflux-${{ matrix.settings.target }}.zip .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: conflux-${{ matrix.settings.target }}
-          path: ./conflux-*
+          path: ./conflux-${{ matrix.settings.target }}.zip
           if-no-files-found: error
 
   release:
