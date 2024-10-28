@@ -160,7 +160,7 @@ jobs:
 
       - name: copy conflux
         if: ${{matrix.settings.host != 'windows-latest'}}
-        run: cp conflux/target/${{matrix.settings.target}}/release/conflux ./conflux-${{ matrix.settings.target }}/conflux
+        run: cp -r conflux/target/${{matrix.settings.target}}/release/conflux ./conflux-${{ matrix.settings.target }}/conflux
       
       - name: compress
         run: |
