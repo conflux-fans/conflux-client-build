@@ -163,9 +163,15 @@ jobs:
         run: cp conflux/target/${{matrix.settings.target}}/release/conflux ./conflux-${{ matrix.settings.target }}/conflux
       
       - name: compress
+        if: ${{matrix.settings.host != 'windows-latest'}}
         run: |
           cd conflux-${{ matrix.settings.target }}
           zip -r conflux-${{ matrix.settings.target }}.zip .
+      - name: compress
+        if: ${{matrix.settings.host == 'windows-latest'}}
+        run: |
+          Compress-Archive -Path ./conflux-${{ matrix.settings.target }}/* -Destination conflux-${{ matrix.settings.target }}.zip
+          cp conflux-${{ matrix.settings.target }}.zip ./conflux-${{ matrix.settings.target }}/conflux-${{ matrix.settings.target }}.zip
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
