@@ -171,7 +171,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: conflux-${{ matrix.settings.target }}
-          path: ./conflux-${{ matrix.settings.target }}.zip
+          path: ./conflux-${{ matrix.settings.target }}/conflux-${{ matrix.settings.target }}.zip
           if-no-files-found: error
 
   release:
