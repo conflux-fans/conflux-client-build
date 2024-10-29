@@ -152,7 +152,9 @@ jobs:
           ${{ matrix.settings.build }}
 
       - name: copy config
-        run: cp -r conflux/run ./conflux-${{ matrix.settings.target }}
+        run: |
+          cp -r conflux/run ./conflux-${{ matrix.settings.target }}
+          cp -r ./pos_config ./conflux-${{ matrix.settings.target }}
 
       - name: copy conflux
         if: ${{matrix.settings.host == 'windows-latest'}}
