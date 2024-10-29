@@ -153,33 +153,48 @@ jobs:
 
       - name: copy config
         run: |
-          cp -r conflux/run ./conflux-${{ matrix.settings.target }}
-          cp -r ./pos_config ./conflux-${{ matrix.settings.target }}
+          cp -r conflux/run ./artifact
+          cp -r ./pos_config ./artifact
 
       - name: copy conflux
         if: ${{matrix.settings.host == 'windows-latest'}}
-        run: cp conflux/target/${{matrix.settings.target}}/release/conflux.exe ./conflux-${{ matrix.settings.target }}/conflux.exe
+        run: cp conflux/target/${{matrix.settings.target}}/release/conflux.exe ./artifact/conflux.exe
 
       - name: copy conflux
         if: ${{matrix.settings.host != 'windows-latest'}}
-        run: cp conflux/target/${{matrix.settings.target}}/release/conflux ./conflux-${{ matrix.settings.target }}/conflux
-      
+        run: cp conflux/target/${{matrix.settings.target}}/release/conflux ./artifact/conflux
+
       - name: compress
-        if: ${{matrix.settings.host != 'windows-latest'}}
         run: |
-          cd conflux-${{ matrix.settings.target }}
-          zip -r conflux-${{ matrix.settings.target }}.zip .
-      - name: compress
-        if: ${{matrix.settings.host == 'windows-latest'}}
+          tar -zcvf 
+          cd ./artifact
+          tar -zcvf conflux-${{ matrix.settings.target }}.tar.gz ./*
+
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE }}
+
+      - name: Configure GPG and create artifacts
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          Compress-Archive -Path ./conflux-${{ matrix.settings.target }}/* -Destination conflux-${{ matrix.settings.target }}.zip
-          cp conflux-${{ matrix.settings.target }}.zip ./conflux-${{ matrix.settings.target }}/conflux-${{ matrix.settings.target }}.zip
+          echo "$GPG_PASSPHRASE" | gpg --passphrase-fd 0 --pinentry-mode loopback --batch -ab ./artifact/conflux-${{ matrix.settings.target }}.tar.gz
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: conflux-${{ matrix.settings.target }}
-          path: ./conflux-${{ matrix.settings.target }}/conflux-${{ matrix.settings.target }}.zip
+          name: conflux-${{ matrix.settings.target }}.tar.gz
+          path: |
+            ./artifact/conflux-${{ matrix.settings.target }}.tar.gz
+          if-no-files-found: error
+      - name: Upload signature
+        uses: actions/upload-artifact@v4
+        with:
+          name: conflux-${{ matrix.settings.target }}.tar.gz.asc
+          path: |
+            ./artifact/conflux-${{ matrix.settings.target }}.tar.gz.asc
           if-no-files-found: error
 
   release:
