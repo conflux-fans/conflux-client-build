@@ -166,7 +166,6 @@ jobs:
 
       - name: compress
         run: |
-          tar -zcvf 
           cd ./artifact
           tar -zcvf conflux-${{ matrix.settings.target }}.tar.gz ./*
 
