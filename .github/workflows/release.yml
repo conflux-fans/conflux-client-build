@@ -77,14 +77,17 @@ jobs:
         settings:
           - host: macos-13
             target: x86_64-apple-darwin
+            name: x86_64-apple-darwin
             build: RUSTFLAGS="-L $(brew --prefix bzip2)/lib -l bz2"  cargo build --bin conflux --release --target x86_64-apple-darwin
 
           - host: macos-15
             target: aarch64-apple-darwin
+            name: aarch64-apple-darwin
             build: RUSTFLAGS="-L $(brew --prefix bzip2)/lib -l bz2" cargo build --bin conflux --release --target aarch64-apple-darwin
 
           - host: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
+            target: x86_64-unknown-linux-gnu-glibc2.31
+            name: x86_64-unknown-linux-gnu
             build: cross build --bin conflux --release --target x86_64-unknown-linux-gnu
 
           - host: windows-latest
@@ -167,7 +170,7 @@ jobs:
       - name: compress
         run: |
           cd ./artifact
-          tar -zcvf conflux-${{ matrix.settings.target }}.tar.gz ./*
+          tar -zcvf conflux-${{ matrix.settings.name }}.tar.gz ./*
 
       - name: Import GPG key
         uses: crazy-max/ghaction-import-gpg@v6
@@ -179,21 +182,21 @@ jobs:
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
-          echo "$GPG_PASSPHRASE" | gpg --passphrase-fd 0 --pinentry-mode loopback --batch -ab ./artifact/conflux-${{ matrix.settings.target }}.tar.gz
+          echo "$GPG_PASSPHRASE" | gpg --passphrase-fd 0 --pinentry-mode loopback --batch -ab ./artifact/conflux-${{ matrix.settings.name }}.tar.gz
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: conflux-${{ matrix.settings.target }}.tar.gz
+          name: conflux-${{ matrix.settings.name }}.tar.gz
           path: |
-            ./artifact/conflux-${{ matrix.settings.target }}.tar.gz
+            ./artifact/conflux-${{ matrix.settings.name }}.tar.gz
           if-no-files-found: error
       - name: Upload signature
         uses: actions/upload-artifact@v4
         with:
-          name: conflux-${{ matrix.settings.target }}.tar.gz.asc
+          name: conflux-${{ matrix.settings.name }}.tar.gz.asc
           path: |
-            ./artifact/conflux-${{ matrix.settings.target }}.tar.gz.asc
+            ./artifact/conflux-${{ matrix.settings.name }}.tar.gz.asc
           if-no-files-found: error
 
   release:
