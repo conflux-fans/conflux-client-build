@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:20.04
 RUN apt-get update && apt-get install curl lsb-release wget software-properties-common gnupg -y
 
 RUN wget https://apt.llvm.org/llvm.sh && chmod u+x llvm.sh && ./llvm.sh 18
@@ -17,6 +17,6 @@ ENV CXXFLAGS="-std=c++11 -stdlib=libc++"
 ENV LDFLAGS="-stdlib=libc++"
 
 
-# ENV OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu
-# ENV OPENSSL_INCLUDE_DIR=/usr/include/openssl
-# ENV OPENSSL_STATIC=yes
+ENV OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu
+ENV OPENSSL_INCLUDE_DIR=/usr/include/openssl
+ENV OPENSSL_STATIC=yes
