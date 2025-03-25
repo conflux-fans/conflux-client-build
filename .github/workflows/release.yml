@@ -89,7 +89,9 @@ jobs:
             target: x86_64-unknown-linux-gnu
             name: x86_64-unknown-linux-gnu-glibc2.31
             # build: cross build --bin conflux --release --target x86_64-unknown-linux-gnu
-            build: cargo build --bin conflux --release --target x86_64-unknown-linux-gnu
+            # build: CC=clang-18 CXX=clang++-18 CXXFLAGS="-std=c++11 -stdlib=libc++" LDFLAGS="-stdlib=libc++" OPENSSL_LIB_DIR=/usr/lib/x86_64-linux-gnu OPENSSL_INCLUDE_DIR=/usr/include/openssl OPENSSL_STATIC=yes cargo build --bin conflux --release --target x86_64-unknown-linux-gnu
+
+            build: cargo build --release --target x86_64-unknown-linux-gnu
 
           - host: windows-latest
             target: x86_64-pc-windows-msvc
